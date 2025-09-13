@@ -1,10 +1,10 @@
 const flock = [];
-let flockSize = 1000;
+let flockSize = 2000;
 let perceptionRadius = 25;
 
 let quadtree;
 let boundary;
-let capacity = flockSize/100;
+let capacity = flockSize/200;
 
 let alignSlider, cohesionSlider, separationSlider;
 
