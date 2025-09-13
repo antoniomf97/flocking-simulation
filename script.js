@@ -1,51 +1,46 @@
 const flock = [];
+let flockSize = 1000;
+let perceptionRadius = 25;
+
+let quadtree;
+let boundary;
+let capacity = flockSize/100;
 
 let alignSlider, cohesionSlider, separationSlider;
 
 function setup() {
-    createCanvas(1200, 600);
+    createCanvas(1000, 600);
 
-    let sliderDiv = createDiv();
-    sliderDiv.style("display", "flex");
-    
+    boundary = new Rectangle (width/2, height/2, width/2, height/2);
+    quadtree = new QuadTree(boundary, capacity)
 
-    let sepDiv = createDiv();
-    sepDiv.html("Separation: ");
-    sepDiv.style("align-items", "center");
     separationSlider = createSlider(0, 1, 1, 0.01);
-    separationSlider.parent(sepDiv);
-    sepDiv.parent(sliderDiv);
-
-    let algDiv = createDiv();
-    algDiv.html("Align: ");
     alignSlider = createSlider(0, 1, 0.75, 0.01);
-    alignSlider.parent(algDiv);
-    algDiv.parent(sliderDiv);
-
-    let cohDiv = createDiv();
-    cohDiv.html("Cohesion: ");
     cohesionSlider = createSlider(0, 1, 0.5, 0.01); 
-    cohesionSlider.parent(cohDiv);
-    cohDiv.parent(sliderDiv);
-
-    let mxsDiv = createDiv();
-    mxsDiv.html("MaxSpeed: ");
     maxspeedSlider = createSlider(1, 10, 3, 0.5); 
-    maxspeedSlider.parent(mxsDiv);
-    mxsDiv.parent(sliderDiv);
 
-    for  (let i = 0; i < 300; i++) {
+    for  (let i = 0; i < flockSize; i++) {
         flock.push(new Boid());
     }
 }
 
 function draw() {
-    background(51);
+    background(20);
+
+    quadtree.clear();
 
     for (let boid of flock) {
+        let p = new Point(boid.position.x, boid.position.y, boid);
+        quadtree.insert(p);
+
+        let range = new Circle(boid.position.x, boid.position.y, perceptionRadius);
+		let neighbors = quadtree.query(range);
+
+        boid.flock(neighbors);
         boid.edges();
-        boid.flock(flock);
         boid.update();
         boid.show();
     }
+
+    quadtree.display();
 }
